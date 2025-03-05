@@ -1,0 +1,41 @@
+version: '3.8'
+
+networks:
+  postgres-network:
+    name: postgres-network
+
+volumes:
+  postgres-data:
+  pgadmin-data:
+  
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:16 # Using a stable version (use your preferred version)
+    environment:
+      POSTGRES_USER: p_user # Change to your preferred username
+      POSTGRES_PASSWORD: p_password # Change to your preferred password
+      POSTGRES_DB: mydb # Change to your preferred database name
+    ports:
+      - "5432:5432"
+    networks:
+      - postgres-network
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped 
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4:latest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pg@admin.com # Change to your preferred email
+      PGADMIN_DEFAULT_PASSWORD: pg_password # Change to your preferred password
+    ports:
+      - "5050:80"
+    networks:
+      - postgres-network
+    depends_on:
+      - postgres # Very important to let postgres start first
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    restart: unless-stopped 
